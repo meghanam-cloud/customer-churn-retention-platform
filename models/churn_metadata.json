@@ -1,0 +1,39 @@
+
+{
+    "model_name": "CatBoost Config 1",
+    "decision_threshold": 0.60,
+    "target_mapping": {
+        "No": 0,
+        "Yes": 1
+    },
+    "feature_columns": [
+        "gender",
+        "SeniorCitizen",
+        "Partner",
+        "Dependents",
+        "tenure",
+        "PhoneService",
+        "MultipleLines",
+        "InternetService",
+        "OnlineSecurity",
+        "OnlineBackup",
+        "DeviceProtection",
+        "TechSupport",
+        "StreamingTV",
+        "StreamingMovies",
+        "Contract",
+        "PaperlessBilling",
+        "PaymentMethod",
+        "MonthlyCharges",
+        "TotalCharges_clean"
+    ],
+    "test_metrics": {
+        "accuracy": 0.7708,
+        "precision": 0.5563,
+        "recall": 0.6738,
+        "f1_score": 0.6094,
+        "roc_auc": 0.8364
+    },
+    "dataset_note": "IBM Telco Customer Churn sample dataset"
+}
+
