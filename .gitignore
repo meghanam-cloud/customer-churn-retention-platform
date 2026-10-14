@@ -33,3 +33,13 @@ data/
 # MLflow generated files
 mlruns/
 **/mlruns/
+
+# Build and distribution artifacts
+build/
+dist/
+*.egg-info/
+
+# Test and type-check caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
