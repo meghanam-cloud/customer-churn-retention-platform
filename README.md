@@ -1,39 +1,43 @@
 # Customer Churn & Retention Intelligence Platform
 
-An end-to-end machine learning project that analyzes customer churn patterns, predicts churn risk, and lays the foundation for data-driven customer retention.
+An end-to-end machine learning project that analyzes customer churn patterns, compares classification models, and predicts customer churn risk through an API and interactive web interface.
 
 ## Project Overview
 
-Customer churn is a key challenge for subscription-based businesses. This project uses the IBM Telco Customer Churn sample dataset to explore churn behavior, compare classification models, and develop a CatBoost model to predict whether a customer is likely to leave.
+Customer churn is an important challenge for subscription-based businesses. This project uses the IBM Telco Customer Churn sample dataset to explore churn patterns, evaluate machine learning algorithms, and develop a CatBoost classification model.
 
-The project also uses MLflow to track model parameters, evaluation metrics, and the saved model artifact.
+The selected model is exposed through a FastAPI backend and a Streamlit interface. MLflow is used for experiment tracking, and the trained model has also been logged and registered in Databricks Unity Catalog.
 
-## Objectives
+**Dataset note:** Results are based on a sample dataset and do not represent a live customer deployment.
 
-- Analyze customer churn patterns through exploratory data analysis.
-- Prepare and preprocess numerical and categorical features.
-- Compare multiple machine learning algorithms.
-- Tune a CatBoost classifier and select a decision threshold using validation data.
-- Evaluate the selected model on held-out test data.
-- Track model results and artifacts with MLflow.
-- Prepare the project for deployment and customer-retention applications.
+## Project Objectives
+
+- Perform data cleaning and exploratory data analysis.
+- Investigate relationships between customer characteristics and churn.
+- Compare multiple classification algorithms.
+- Tune a CatBoost model and select a decision threshold using validation data.
+- Evaluate model performance on held-out test data.
+- Track model experiments with MLflow.
+- Register the model in Databricks Unity Catalog.
+- Serve predictions through FastAPI and Streamlit.
 
 ## Technology Stack
 
-- Python
-- Pandas and NumPy
-- Scikit-learn
-- CatBoost
-- Matplotlib and Seaborn
-- MLflow
-- Jupyter Notebook
-- Git and GitHub
+- **Language:** Python
+- **Data analysis:** Pandas, NumPy
+- **Machine learning:** Scikit-learn, CatBoost
+- **Visualization:** Matplotlib, Seaborn
+- **Experiment tracking:** MLflow
+- **Model management:** Databricks Unity Catalog
+- **API:** FastAPI, Uvicorn
+- **Interactive UI:** Streamlit
+- **Development:** Jupyter Notebook, Git, GitHub
 
-## Current Model Performance
+## Model Evaluation
 
-The selected CatBoost model was evaluated on the held-out test set.
+The selected CatBoost model was evaluated on the held-out test set using a decision threshold of 0.60, selected using validation data.
 
-| Metric | Result |
+| Metric | Test Result |
 |---|---:|
 | Accuracy | 77.08% |
 | Precision | 55.63% |
@@ -41,26 +45,30 @@ The selected CatBoost model was evaluated on the held-out test set.
 | F1 Score | 60.94% |
 | ROC-AUC | 83.64% |
 
-The decision threshold of 0.60 was selected using validation data. The results reflect a trade-off between identifying customers who churn and avoiding false-positive predictions.
+The threshold determines how predicted churn probabilities are converted into Yes/No predictions. A threshold of 0.60 means probabilities at or above 0.60 are classified as churn.
 
-These results are based on the IBM Telco Customer Churn sample dataset, not live customer data.
+These metrics reflect the evaluation on this sample dataset; performance may differ on other customer populations.
 
 ## Repository Structure
 
 ```text
 customer-churn-retention-platform/
 ├── app/
-│   └── main.py
+│   ├── main.py
+│   └── streamlit_app.py
 ├── models/
 │   ├── churn_catboost.cbm
 │   └── churn_metadata.json
 ├── notebooks/
 │   └── 01_data_understanding.ipynb
+├── requirements.txt
 ├── .gitignore
 └── README.md
 ```
 
-## Getting Started
+The raw dataset is excluded from the repository and must be obtained separately.
+
+## Run Locally
 
 ### 1. Clone the repository
 
@@ -69,59 +77,81 @@ git clone https://github.com/meghanam-cloud/customer-churn-retention-platform.gi
 cd customer-churn-retention-platform
 ```
 
-### 2. Create a virtual environment
+### 2. Create and activate a virtual environment
 
-```bash
-python -m venv .venv
-```
-
-Activate it on Windows PowerShell:
+On Windows PowerShell:
 
 ```powershell
+python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
 ### 3. Install dependencies
 
-Install the packages required by the notebook and application. A complete `requirements.txt` will be added as the project is finalized.
+```powershell
+python -m pip install -r requirements.txt
+```
 
-### 4. Obtain the dataset
+### 4. Start the FastAPI backend
 
-Use the IBM Telco Customer Churn sample dataset. Place `Telco-Customer-Churn.csv` inside the `data/` directory. The raw CSV is intentionally excluded from this repository.
+Run in the first terminal:
 
-### 5. Explore the notebook
+```powershell
+python -m uvicorn app.main:app --reload
+```
 
-Open `notebooks/01_data_understanding.ipynb` in Jupyter Notebook or VS Code and run the cells in order.
+Useful endpoints:
 
-## Experiment Tracking
+- API documentation: http://127.0.0.1:8000/docs
+- Health check: http://127.0.0.1:8000/health
+- Prediction endpoint: `POST /predict`
 
-The selected CatBoost model and its parameters and evaluation metrics have been logged in a local MLflow experiment named `Customer-Churn-Retention`.
-      
-The project will be extended with Databricks-based experiment tracking, model management, and a prediction interface.
+Keep the backend running while using the interface.
 
-## Current Status
+### 5. Start the Streamlit interface
 
-- Data cleaning and exploratory analysis completed.
-- Multiple model families evaluated.
-- CatBoost model tuned and evaluated.
-- Model artifact and metadata saved.
-- Initial MLflow experiment logged.
-- Project uploaded to GitHub.
+Open a second terminal in the project directory, activate the same virtual environment, and run:
+
+```powershell
+python -m streamlit run app/streamlit_app.py
+```
+
+Open the local URL displayed in the terminal, usually http://localhost:8501.
+
+Enter customer details in the interface to request a churn prediction from the FastAPI backend.
+
+### 6. Explore the notebook
+
+Obtain the IBM Telco Customer Churn sample dataset and place `Telco-Customer-Churn.csv` inside the `data/` directory.
+
+Open `notebooks/01_data_understanding.ipynb` in Jupyter Notebook or VS Code to review the data preparation and exploratory analysis.
+
+## MLflow and Databricks
+
+The project uses MLflow to track experiment parameters, evaluation metrics, and model artifacts.
+
+The model was also logged in Databricks and registered in Unity Catalog as:
+
+`ai_projects_catalog.default.customer_churn_model`
+
+The registered model is available for model management and further deployment workflows. A managed model-serving endpoint is not part of the current local prediction setup.
 
 ## Limitations
 
-- The dataset is a sample dataset and may not represent real-world customer behavior.
-- Predictive associations do not establish the causes of churn.
-- Model performance and decision thresholds may change on different datasets.
-- A production deployment and end-user prediction interface are still in progress.
+- The dataset is a sample and may not represent real-world customer behavior.
+- Associations between features and churn do not establish causation.
+- The chosen decision threshold reflects this project's validation approach and business trade-offs.
+- The local FastAPI and Streamlit applications are not a production-hosted service.
+- Model performance should be re-evaluated before using the model with real customer data.
 
 ## Future Improvements
 
-- Integrate Databricks and managed model tracking.
-- Add a prediction API and interactive Streamlit interface.
-- Add automated tests and input validation.
-- Document reproducible installation and deployment steps.
+- Add automated unit and API tests.
+- Introduce data and prediction monitoring.
+- Evaluate model calibration and threshold choices against explicit retention costs.
+- Add a reproducible training pipeline and model versioning workflow.
+- Extend the analysis with SQL-based customer analytics and a business intelligence dashboard.
 
 ## Author
 
-Built as a portfolio project to demonstrate data analysis, machine learning, model evaluation, and experiment tracking.
+Built as a portfolio project demonstrating data analysis, classification modeling, model evaluation, experiment tracking, model management, API development, and interactive machine learning applications.
